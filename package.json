@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "gulp run --gulpfile ./gulpfile.js",
+    "run": "node bin/www",
+    "dev": "gulp run --gulpfile ./gulpfile.js",
     "watch": "gulp --gulpfile ./gulpfile.js watcher",
     "build": "gulp --gulpfile ./gulpfile.js dev"
   },
