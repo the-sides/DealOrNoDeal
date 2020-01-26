@@ -35,7 +35,7 @@ async function nodemonTask(cb) {
 
 
 function scripts(){
-    return src(['./src/scripts/client.js',
+    return src(['./src/scripts/**.js',
                ])
             .pipe(sourcemaps.init())
             .pipe(named())
@@ -69,7 +69,7 @@ const dev = series(
     scripts, 
     parallel(
         styles, 
-    //    images
+        images
         )
     )
 
