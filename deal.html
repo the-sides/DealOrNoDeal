@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      font: 24px "Lucida Grande", Helvetica, Arial, sans-serif;
+      background-color: #191c20;
+      color: #eeeeee;
+    }
+
+    li {
+      font-size: 16px;
+      list-style: none;
+    }
+
+    header {
+      padding-bottom: 3rem;
+      border-bottom: 1px white solid;
+    }
+
+    .banker {
+      text-align: center;
+      margin: 2rem auto;
+    }
+
+    .banker input {
+      font-size: 1.2rem;
+    }
+
+    .gameStage {
+      display: flex;
+    }
+
+    .ui {
+      margin: 2rem auto;
+      width: fit-content;
+    }
+
+    .ui .btn {
+      background-color: green;
+      color: white;
+    }
+
+    .checks {
+      flex: 0 1 30%;
+      min-width: 160px;
+    }
+
+    .check input {
+      font-size: 2rem;
+      height: 1.4rem;
+    }
+
+    .check p {
+      display: inline;
+    }
+
+    .cases {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .case {
+      flex: 1;
+      background-color: lightblue;
+    }
+
+    .case.opened {
+      background-color: yellow;
+    }
+
+    .case.picked {
+      background-color: blue;
+      color: white;
+    }
+
+    .btn {
+      display: inline-block;
+      min-width: 200px;
+      max-width: 200px;
+      margin: 10px;
+      height: 100px;
+      font-size: 1.3rem;
+    }
+
+    main {
+      padding: 4rem;
+      background-color: rgba(0, 200, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <ul>
+      <li>To play click on the Start New Game button.</li>
+
+      <li>Choose one of the 10 light blue buttons to be your suitcase that you may choose to hold until the end of
+        the game.</li>
+
+      <li>Then choose another button, which corresponds to opening a suitcase with a certain money amount.</li>
+
+      <li>Then choose between Deal or opening another suitcase. If you choose Deal, then the game ends and you win
+        the amount of money given in the offer box. If you open another suitcase, then you will receive a new
+        offer.</li>
+
+      <li>Continue in this fashion until you choose Deal or until you have opened all the suitcases, in which you
+        will win the amount that is in the suitcase you chose at the beginning of the game.</li>
+
+      <li>To play another game, just click on the Start New Game button again.</li>
+    </ul>
+  </header>
+  <section>
+    <section class="banker">
+      <label for="offer">Offer</label>
+      <input type="text" name="offer" id="offer" value="0" readonly>
+    </section>
+  </section>
+  <main>
+    <section class="gameStage">
+      <section class="cases">
+      </section>
+      <section class="checks">
+      </section>
+    </section>
+    <section class="ui">
+      <button class="btn takeDeal">Deal</button>
+      <button class="btn start">Start New Game</button>
+    </section>
+  </main>
+</body>
+<script>
+  const checkStage = document.querySelector(".checks");
+  const caseStage = document.querySelector(".cases");
+  const offerStage = document.querySelector(".banker input");
+  const cash = [0.01, 1, 5, 10, 100, 1000, 10000, 100000, 500000, 1000000];
+  let newGame = true;
+  let handleNewGame;
+
+  function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+  }
+
+  const makeOffer = () => {
+    let sum = 0;
+    let total = 0;
+    const check = checkStage.querySelectorAll("input");
+    check.forEach((elm) => {
+      if (elm.checked == false) {
+        sum += Number(elm.dataset.cash);
+        total += 1;
+      }
+    });
+    if (total == 1) {
+      window.alert(`You won ${sum}, which was in your case this whole time!`);
+      handleNewGame();
+      return;
+    }
+    offerStage.value = formatNumber(((sum / total) * 0.9).toFixed(2));
+  };
+
+  const findAndCheck = (val) => {
+    const checks = checkStage.querySelectorAll(".check");
+    checks.forEach((elm) => {
+      if (elm.dataset.cash === val) {
+        elm.children[0].checked = true;
+      }
+    });
+  };
+
+  const handleOpen = (ev) => {
+    if (newGame) {
+      newGame = false;
+      ev.srcElement.classList.add("picked");
+      return;
+    }
+    if (ev.srcElement.classList.contains("picked")) {
+      return;
+    }
+
+    ev.srcElement.classList.add("opened");
+    const cash = ev.srcElement.dataset.cash;
+    ev.srcElement.textContent = cash;
+    findAndCheck(cash);
+    makeOffer();
+  };
+
+  const generateCase = (stage, caseNum, value, disable = false) => {
+    const caseElm = document.createElement("button");
+    caseElm.textContent = caseNum;
+    caseElm.dataset.cash = value;
+    caseElm.classList.add("case");
+    caseElm.classList.add("btn");
+    if (disable) caseElm.disabled = true;
+    caseElm.addEventListener("mouseup", handleOpen);
+    stage.appendChild(caseElm);
+  };
+
+  const generateCases = (cash, disable = false) => {
+    const cashArr = [...cash];
+
+    while (cashArr.length > 0) {
+      generateCase(
+        caseStage,
+        11 - cashArr.length,
+        cashArr.splice(Math.round(Math.random() * (cashArr.length - 1)), 1),
+        disable
+      );
+    }
+  };
+
+  const generateChecks = (cashVal) => {
+    const checkRawHTML = `<span class="check" data-cash=${cashVal}>
+  <input type="checkbox" readonly onclick="return false;" data-cash=${cashVal}>
+  <p>$${formatNumber(cashVal)}</p>
+</span>`;
+    const checkElm = document.createElement("div");
+    checkElm.innerHTML = checkRawHTML;
+    checkStage.appendChild(checkElm);
+  };
+
+  cash.forEach(generateChecks);
+
+  generateCases(cash, true);
+
+  handleNewGame = () => {
+    newGame = true;
+    caseStage.innerHTML = "";
+    checkStage.innerHTML = "";
+    offerStage.value = 0;
+    console.log(cash);
+    generateCases(cash);
+    cash.forEach(generateChecks);
+  };
+
+  const takeDeal = () => {
+    const yourCaseValue = formatNumber(
+      document.querySelector(".picked").dataset.cash
+    );
+    window.alert(`You took the offer of ${offerStage.value}.
+  Your case had ${yourCaseValue}
+  `);
+    handleNewGame();
+  };
+
+  document.querySelector(".start").addEventListener("mouseup", handleNewGame);
+  document.querySelector(".takeDeal").addEventListener("mouseup", takeDeal);
+
+</script>
+
+</html>
