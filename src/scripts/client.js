@@ -2,10 +2,12 @@ const checkStage = document.querySelector(".checks");
 const caseStage = document.querySelector(".cases");
 const offerStage = document.querySelector(".banker input");
 const cash = [0.01, 1, 5, 10, 100, 1000, 10000, 100000, 500000, 1000000];
-let gameState = {
-  newGame: true,
-  offer: 0,
-};
+let newGame = true;
+let handleNewGame;
+
+function formatNumber(num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
 
 const makeOffer = () => {
   let sum = 0;
@@ -17,11 +19,13 @@ const makeOffer = () => {
       total += 1;
     }
   });
-  console.table(sum, total)
-  offerStage.value = ((sum / total) * 0.9).toFixed(2);
+  if (total == 1) {
+    window.alert(`You won ${sum}, which was in your case this whole time!`);
+    handleNewGame();
+    return;
+  }
+  offerStage.value = formatNumber(((sum / total) * 0.9).toFixed(2));
 };
-
-window.makeOffer = makeOffer;
 
 const findAndCheck = (val) => {
   const checks = checkStage.querySelectorAll(".check");
@@ -33,8 +37,8 @@ const findAndCheck = (val) => {
 };
 
 const handleOpen = (ev) => {
-  if (gameState.newGame) {
-    gameState.newGame = false;
+  if (newGame) {
+    newGame = false;
     ev.srcElement.classList.add("picked");
     return;
   }
@@ -76,7 +80,7 @@ const generateCases = (cash, disable = false) => {
 const generateChecks = (cashVal) => {
   const checkRawHTML = `<span class="check" data-cash=${cashVal}>
   <input type="checkbox" readonly onclick="return false;" data-cash=${cashVal}>
-  <p>$${cashVal}</p>
+  <p>$${formatNumber(cashVal)}</p>
 </span>`;
   const checkElm = document.createElement("div");
   checkElm.innerHTML = checkRawHTML;
@@ -87,13 +91,25 @@ cash.forEach(generateChecks);
 
 generateCases(cash, true);
 
-const newGame = () => {
-  gameState.newGame = true;
+handleNewGame = () => {
+  newGame = true;
   caseStage.innerHTML = "";
   checkStage.innerHTML = "";
+  offerStage.value = 0;
   console.log(cash);
   generateCases(cash);
   cash.forEach(generateChecks);
 };
 
-document.querySelector(".start").addEventListener("mouseup", newGame);
+const takeDeal = () => {
+  const yourCaseValue = formatNumber(
+    document.querySelector(".picked").dataset.cash
+  );
+  window.alert(`You took the offer of ${offerStage.value}.
+  Your case had ${yourCaseValue}
+  `);
+  handleNewGame();
+};
+
+document.querySelector(".start").addEventListener("mouseup", handleNewGame);
+document.querySelector(".takeDeal").addEventListener("mouseup", takeDeal);
