@@ -59,6 +59,10 @@ header {
   &.opened {
     background-color: yellow;
   }
+  &.picked {
+    background-color: blue;
+    color: white;
+  }
 }
 
 .btn {
