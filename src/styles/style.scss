@@ -4,8 +4,13 @@ body {
   color: #eeeeee;
 }
 li {
-  font-size: 14px;
+  font-size: 16px;
   list-style: none;
+}
+
+header {
+  padding-bottom: 3rem;
+  border-bottom: 1px white solid;
 }
 
 .banker {
@@ -14,6 +19,23 @@ li {
   input {
     font-size: 1.2rem;
   }
+}
+
+.gameStage {
+  display: flex;
+}
+.ui {
+  margin: 2rem auto;
+  width: fit-content;
+  .btn {
+    background-color: green;
+    color: white;
+  }
+}
+
+.checks {
+  flex: 0 1 30%;
+  min-width: 160px;
 }
 
 .check{
@@ -27,13 +49,23 @@ li {
 }
 
 .cases {
-  max-width: 60%;
+  // max-width: 60%;
   display: flex;
+  flex-wrap: wrap;
 }
 .case {
-  display: inline-block;
   flex: 1;
-  width: 200px;
+  background-color: lightblue;
+  &.opened {
+    background-color: yellow;
+  }
+}
+
+.btn {
+  display: inline-block;
+  min-width: 200px;
+  max-width: 200px;
+  margin: 10px;
   height: 100px;
   font-size: 1.3rem;
 }
