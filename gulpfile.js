@@ -7,7 +7,6 @@ const del = require('del')
 const named = require('vinyl-named')
 const sourcemaps = require('gulp-sourcemaps');
 const sass = require('gulp-sass');
-const rename = require('gulp-rename');
 
 function clean(){
     return del([
@@ -64,10 +63,6 @@ function images(){
             .pipe(dest('dist/images/'))
 }
 
-function template(){
-    return src(['./src/views/deal.html'])
-            .pipe(dest('index.html'))
-}
 
 const dev = series(
     clean, 
@@ -76,8 +71,7 @@ const dev = series(
     parallel(
         styles, 
         images
-        ),
-    template
+        )
 )
 
 async function watcher(){
