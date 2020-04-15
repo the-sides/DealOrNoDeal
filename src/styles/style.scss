@@ -1,5 +1,43 @@
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 24px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-color: #191c20;
   color: #eeeeee;
+}
+li {
+  font-size: 14px;
+  list-style: none;
+}
+
+.banker {
+  text-align: center;
+  margin: 2rem auto;
+  input {
+    font-size: 1.2rem;
+  }
+}
+
+.check{
+  input {
+    font-size: 2rem;
+    height: 1.4rem;
+  }
+  p {
+    display: inline;
+  }
+}
+
+.cases {
+  max-width: 60%;
+  display: flex;
+}
+.case {
+  display: inline-block;
+  flex: 1;
+  width: 200px;
+  height: 100px;
+  font-size: 1.3rem;
+}
+main{
+  padding: 4rem;
+  background-color: rgba(0,200,0, 0.3)
 }
